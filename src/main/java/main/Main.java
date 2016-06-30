@@ -1,15 +1,15 @@
 package main;
 
 import accounts.AccountService;
-import accounts.UserProfile;
+import dbService.DBService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import servlets.SessionsServlet;
-import servlets.UsersServlet;
+import servlets.SignInServelets;
+import servlets.SignUpServelets;
 
 /**
  * @author v.chibrikov
@@ -23,14 +23,15 @@ import servlets.UsersServlet;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
+        DBService dbService = new DBService();
         AccountService accountService = new AccountService();
 
-        accountService.addNewUser(new UserProfile("admin"));
-        accountService.addNewUser(new UserProfile("test"));
+//        accountService.addNewUserToLoginMap(new UserProfile("admin"));
+//        accountService.addNewUserToLoginMap(new UserProfile("test"));
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new UsersServlet(accountService)), "/signup");
-        context.addServlet(new ServletHolder(new SessionsServlet(accountService)), "/signin");
+        context.addServlet(new ServletHolder(new SignUpServelets(accountService, dbService)), "/signup");
+        context.addServlet(new ServletHolder(new SignInServelets(accountService, dbService)), "/signin");
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setResourceBase("public_html");

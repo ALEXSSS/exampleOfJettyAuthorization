@@ -19,7 +19,7 @@ public class AccountService {
         sessionIdToProfile = new HashMap<>();
     }
 
-    public void addNewUser(UserProfile userProfile) {
+    public void addNewUserToLoginMap(UserProfile userProfile) {
         loginToProfile.put(userProfile.getLogin(), userProfile);
     }
 

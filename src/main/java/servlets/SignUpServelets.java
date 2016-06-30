@@ -2,6 +2,8 @@ package servlets;
 
 import accounts.AccountService;
 import accounts.UserProfile;
+import dbService.DBException;
+import dbService.DBService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,12 +18,13 @@ import java.io.IOException;
  *         <p>
  *         Описание курса и лицензия: https://github.com/vitaly-chibrikov/stepic_java_webserver
  */
-public class UsersServlet extends HttpServlet {
+public class SignUpServelets extends HttpServlet {
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"}) //todo: remove after module 2 home work
     private final AccountService accountService;
-
-    public UsersServlet(AccountService accountService) {
+    private final DBService dbService;
+    public SignUpServelets(AccountService accountService, DBService dbService) {
         this.accountService = accountService;
+        this.dbService = dbService;
     }
 
     //get public user profile
@@ -35,13 +38,17 @@ public class UsersServlet extends HttpServlet {
                        HttpServletResponse response) throws ServletException, IOException {
         String login = request.getParameter("login");
         String pass = request.getParameter("password");
-        if (accountService.getUserByLogin(login) != null) {
+        try {
+            if (dbService.getUserIdByName(login) != -1) {
 
-        } else {
-            if (!login.equals("") && !pass.equals("")) {
-                UserProfile user = new UserProfile(login, pass, "eee");
-                accountService.addNewUser(user);
+            } else {
+                if (!login.equals("") && !pass.equals("")) {
+                    UserProfile user = new UserProfile(login, pass, "eee");
+                    dbService.addUser(login,pass);
+                }
             }
+        } catch (DBException e) {
+            e.printStackTrace();
         }
         //todo: module 2 home work
     }
